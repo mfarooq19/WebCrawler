@@ -122,9 +122,7 @@ public function crawl() {
 }
 
 // Function for searching content 
-public function searchContent() {
-    $searchString = "your_search_string"; 
-
+public function searchContent($searchString) {
     while (!empty($this->urlQueue)) {
         $currentUrl = array_shift($this->urlQueue);
 
@@ -134,7 +132,6 @@ public function searchContent() {
 
             // Branch executed in case of successful HTML retrieval
             if ($htmlContent !== false) {
-                $this->parseAndSearchData($htmlContent, $searchString);
                 if (strpos($htmlContent, $searchString) !== false) {
                     echo "Found in: $currentUrl\n";
                 }
@@ -149,13 +146,14 @@ public function searchContent() {
 // Check which button was clicked
 if (isset($_POST['action'])) {
     $action = $_POST['action'];
+    $searchString = $_POST['searchString'];
 
     switch ($action) {
         case 'crawl':
             echo crawl();
             break;
         case 'search':
-            echo searchContent();
+            echo searchContent($searchString);
             break;
         default:
             echo "Invalid action.";
@@ -164,7 +162,8 @@ if (isset($_POST['action'])) {
 }
 
 // Example usage
-$seedUrl = "https://www.webmd.com/eye-health/nearsightedness-myopia";
+$seedUrl = "https://my.clevelandclinic.org/";
 $crawler = new WebCrawler($seedUrl);
 $crawler->crawl();
 ?>
+
