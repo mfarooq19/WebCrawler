@@ -94,7 +94,22 @@ class WebCrawler {
         return $depth;
     }
 }
+private function parseAndExtractData($htmlContent) {
+    $dom = new DOMDocument;
+    @$dom->loadHTML($htmlContent); // Suppress warnings
 
+    $articles = $dom->getElementsByTagName('article');
+
+    foreach ($articles as $article) {
+        $titleElements = $article->getElementsByTagName('h2');
+        if ($titleElements->length > 0) {
+            $title = $titleElements->item(0)->textContent;
+
+            // display the extracted data 
+            echo "Article Title: $title\n";
+        }
+    }
+}
 // Example usage
 $seedUrl = "https://www.webmd.com/eye-health/nearsightedness-myopia";
 $crawler = new WebCrawler($seedUrl);
