@@ -102,7 +102,7 @@ class WebCrawler {
     }
 }
 
-// Function for crawling (replace with actual crawling logic)
+// Function for crawling 
 public function crawl() {
     while (!empty($this->urlQueue)) {
         $currentUrl = array_shift($this->urlQueue);
@@ -121,9 +121,9 @@ public function crawl() {
     }
 }
 
-// Function for searching content (replace with actual search logic)
+// Function for searching content 
 public function searchContent() {
-    $searchString = "your_search_string"; // Replace with the actual string you want to search for
+    $searchString = "your_search_string"; 
 
     while (!empty($this->urlQueue)) {
         $currentUrl = array_shift($this->urlQueue);
@@ -134,7 +134,7 @@ public function searchContent() {
 
             // Branch executed in case of successful HTML retrieval
             if ($htmlContent !== false) {
-                // Replace this with actual search logic
+                $this->parseAndSearchData($htmlContent, $searchString);
                 if (strpos($htmlContent, $searchString) !== false) {
                     echo "Found in: $currentUrl\n";
                 }
