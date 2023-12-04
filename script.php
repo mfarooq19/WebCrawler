@@ -1,15 +1,16 @@
 <?php
 
 class WebCrawler {
-    private $urlQueue = []; 
+    private $urlQueue = [];
     private $visitedUrls = [];
     private $depthLimit = 5;
-    
+
     // Init crawler with seed
     public function __construct($seedUrl) {
         $this->urlQueue[] = $seedUrl;
     }
- // Starting point for crawler
+
+    // Starting point for crawler
     public function crawl() {
         while (!empty($this->urlQueue)) {
             $currentUrl = array_shift($this->urlQueue);
@@ -18,7 +19,7 @@ class WebCrawler {
             if (!in_array($currentUrl, $this->visitedUrls)) {
                 $htmlContent = $this->fetchContent($currentUrl);
 
-                // Branch executed in case of successful html retrieval  
+                // Branch executed in case of successful html retrieval
                 if ($htmlContent !== false) {
                     $this->parseAndExtractData($htmlContent);
                     $this->visitedUrls[] = $currentUrl;
@@ -27,7 +28,6 @@ class WebCrawler {
             }
         }
     }
-}
 
     // Fetch Content Method sends an HTTP request and retrieves HTML content
     private function fetchContent($url) {
@@ -43,12 +43,19 @@ class WebCrawler {
 
     // Parse and Extract Data Method extracts data from HTML content
     private function parseAndExtractData($htmlContent) {
-        // Extract title information (demo: <h1> tag)
-        preg_match('/<h1>(.*?)<\/h1>/', $htmlContent, $matches);
+        $dom = new DOMDocument;
+        @$dom->loadHTML($htmlContent); // Suppress warnings
 
-        if (!empty($matches[1])) {
-            // Display or log the extracted data
-            echo "Title: " . $matches[1] . "\n";
+        $articles = $dom->getElementsByTagName('article');
+
+        foreach ($articles as $article) {
+            $titleElements = $article->getElementsByTagName('h2');
+            if ($titleElements->length > 0) {
+                $title = $titleElements->item(0)->textContent;
+
+                // Display or log the extracted data
+                echo "Article Title: $title\n";
+            }
         }
     }
 
@@ -94,23 +101,70 @@ class WebCrawler {
         return $depth;
     }
 }
-private function parseAndExtractData($htmlContent) {
-    $dom = new DOMDocument;
-    @$dom->loadHTML($htmlContent); // Suppress warnings
 
-    $articles = $dom->getElementsByTagName('article');
+// Function for crawling (replace with actual crawling logic)
+public function crawl() {
+    while (!empty($this->urlQueue)) {
+        $currentUrl = array_shift($this->urlQueue);
 
-    foreach ($articles as $article) {
-        $titleElements = $article->getElementsByTagName('h2');
-        if ($titleElements->length > 0) {
-            $title = $titleElements->item(0)->textContent;
+        // Check prev visits, if any, to url
+        if (!in_array($currentUrl, $this->visitedUrls)) {
+            $htmlContent = $this->fetchContent($currentUrl);
 
-            // display the extracted data 
-            echo "Article Title: $title\n";
+            // Branch executed in case of successful HTML retrieval
+            if ($htmlContent !== false) {
+                $this->parseAndExtractData($htmlContent);
+                $this->visitedUrls[] = $currentUrl;
+                $this->extractLinks($htmlContent, $currentUrl);
+            }
         }
     }
 }
+
+// Function for searching content (replace with actual search logic)
+public function searchContent() {
+    $searchString = "your_search_string"; // Replace with the actual string you want to search for
+
+    while (!empty($this->urlQueue)) {
+        $currentUrl = array_shift($this->urlQueue);
+
+        // Check prev visits, if any, to url
+        if (!in_array($currentUrl, $this->visitedUrls)) {
+            $htmlContent = $this->fetchContent($currentUrl);
+
+            // Branch executed in case of successful HTML retrieval
+            if ($htmlContent !== false) {
+                // Replace this with actual search logic
+                if (strpos($htmlContent, $searchString) !== false) {
+                    echo "Found in: $currentUrl\n";
+                }
+
+                $this->visitedUrls[] = $currentUrl;
+                $this->extractLinks($htmlContent, $currentUrl);
+            }
+        }
+    }
+}
+
+// Check which button was clicked
+if (isset($_POST['action'])) {
+    $action = $_POST['action'];
+
+    switch ($action) {
+        case 'crawl':
+            echo crawl();
+            break;
+        case 'search':
+            echo searchContent();
+            break;
+        default:
+            echo "Invalid action.";
+            break;
+    }
+}
+
 // Example usage
 $seedUrl = "https://www.webmd.com/eye-health/nearsightedness-myopia";
 $crawler = new WebCrawler($seedUrl);
 $crawler->crawl();
+?>
